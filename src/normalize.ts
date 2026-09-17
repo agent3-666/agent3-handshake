@@ -172,7 +172,7 @@ export function inspect(resource: RawResource): Defect[] {
       severity: "warning",
       field: "payment.model",
       detail:
-        'the payment kind is published under "model"; a caller reading "mode" reads undefined and would treat a priced entry as free',
+        'the payment kind is published under "model"; a caller that reads "mode" finds nothing there and would treat a priced entry as free',
     });
   }
 
