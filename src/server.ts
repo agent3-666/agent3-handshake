@@ -83,7 +83,14 @@ async function runTool(name: string, args: Record<string, unknown>) {
 }
 
 const server = createServer(async (req, res) => {
-  const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+  // Behind a TLS-terminating proxy the socket is plain http, so the scheme has
+  // to come from the forwarded header. Deriving it from the socket would make
+  // every self-reported URL say http:// on a service that is only reachable
+  // over https, which the event's verifier rejects and a reader would read as
+  // a broken deployment.
+  const forwardedProto = String(req.headers["x-forwarded-proto"] ?? "").split(",")[0]!.trim();
+  const scheme = forwardedProto === "https" || forwardedProto === "http" ? forwardedProto : "http";
+  const url = new URL(req.url ?? "/", `${scheme}://${req.headers.host ?? "localhost"}`);
   const path = url.pathname.replace(/\/+$/, "") || "/";
 
   if (req.method === "OPTIONS") {
