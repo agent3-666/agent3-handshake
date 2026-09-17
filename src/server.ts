@@ -110,6 +110,10 @@ const server = createServer(async (req, res) => {
 
     if (path === "/.well-known/xagent-verification.json") {
       send(res, 200, {
+        // schemaVersion, slug and commit are the three fields the event's
+        // verifier compares against submission.json. Keep them first and keep
+        // them exact.
+        schemaVersion: 1,
         slug: SLUG,
         commit: COMMIT,
         apiBaseUrl: `${url.origin}/v1`,
